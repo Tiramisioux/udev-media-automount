@@ -90,7 +90,7 @@ fi
 
 # directory name
 # AUTOMOUNT_DIR="${mediadir}/${LABEL:-${dev##*/}}.$TYPE"
-AUTOMOUNT_DIR="${mediadir}${clipdir}"
+AUTOMOUNT_DIR="${mediadir}/RAW"
 
 # Avoid conflicts when multiple devices have the same label
 if [ -e "$AUTOMOUNT_DIR" ] && mountpoint -q "$AUTOMOUNT_DIR"
