@@ -1,0 +1,8 @@
+# -*- sh -*-
+
+# Mount options to use for auto-mounting NTFS drives
+# AUTOMOUNT_OPTS=remount-ro,relatime,utf8,user,flush
+AUTOMOUNT_OPTS=rw,noatime,discard,force,prealloc,showmeta,nohidden
+
+# If NTFS-3G is installed, use it as the mount type
+hash ntfs-3g && AUTOMOUNT_TYPE="ntfs3"

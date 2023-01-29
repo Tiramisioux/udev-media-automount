@@ -2,15 +2,18 @@
 #$1 = <dev>
 
 # Default options to use for mounting
-AUTOMOUNT_OPTS='users'
+# AUTOMOUNT_OPTS='users'
+AUTOMOUNT_OPTS='rw,noatime,discard,force,prealloc,showmeta,nohidden'
 # Default type to use for mounting
-AUTOMOUNT_TYPE='auto'
+# AUTOMOUNT_TYPE='auto'
+AUTOMOUNT_TYPE='ntfs3'
 
 # Directory to look for type-specific settings
 confdir=/etc/media-automount.d
 
 # Directory to use as parent media dir for mountpoints
 mediadir=/media
+clipdir=/RAW
 
 [ $(id -u) != 0 ] && {
     echo "This tool requires root permissions"
@@ -86,7 +89,8 @@ then
 fi
 
 # directory name
-AUTOMOUNT_DIR="${mediadir}/${LABEL:-${dev##*/}}.$TYPE"
+# AUTOMOUNT_DIR="${mediadir}/${LABEL:-${dev##*/}}.$TYPE"
+AUTOMOUNT_DIR="${mediadir}${clipdir}"
 
 # Avoid conflicts when multiple devices have the same label
 if [ -e "$AUTOMOUNT_DIR" ] && mountpoint -q "$AUTOMOUNT_DIR"
