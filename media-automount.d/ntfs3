@@ -1,6 +1,5 @@
 # -*- sh -*-
 
+AUTOMOUNT_OPTS='rw,defaults,uid=1000,gid=1000,umask=777,errors=continue,noatime,discard,force,prealloc'
 # Mount options to use for auto-mounting NTFS drives
-AUTOMOUNT_OPTS='relatime,utf8,users,flush,discard'
-
 AUTOMOUNT_TYPE="ntfs3"

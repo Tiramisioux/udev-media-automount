@@ -3,7 +3,7 @@
 
 # Default options to use for mounting
 # AUTOMOUNT_OPTS='users'
-AUTOMOUNT_OPTS='rw,noatime,discard,force,prealloc,showmeta,nohidden'
+AUTOMOUNT_OPTS='rw,noatime,noacsrules,discard,force,prealloc,showmeta,nohidden'
 # Default type to use for mounting
 # AUTOMOUNT_TYPE='auto'
 AUTOMOUNT_TYPE='ntfs3'
