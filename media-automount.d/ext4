@@ -1,7 +1,24 @@
-# -*- sh -*-
+#!/bin/sh
 
-# Options to use for auto-mounting generic filesystems
-AUTOMOUNT_OPTS='users'
+# This script is used for automounting ext4 filesystems
 
-# Type to use for auto-mounting generic filesystems
-AUTOMOUNT_TYPE=auto
+# Mount options to use for auto-mounting ext4 drives
+AUTOMOUNT_OPTS='defaults'
+
+# If you want to disable journaling, you can uncomment the following line
+# AUTOMOUNT_OPTS+=' -o ^has_journal'
+
+# Mount type
+AUTOMOUNT_TYPE='ext4'
+
+# Device identifier
+DEVICE=$1
+
+# Mount point
+MOUNT_POINT="/media/RAW"
+
+# Create the mount point if it doesn't exist
+mkdir -p "$MOUNT_POINT"
+
+# Mount the filesystem
+mount -t "$AUTOMOUNT_TYPE" -o "$AUTOMOUNT_OPTS" "$DEVICE" "$MOUNT_POINT"
