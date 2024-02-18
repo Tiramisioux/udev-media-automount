@@ -13,3 +13,5 @@ KERNEL=="sd[a-z]*", ACTION=="add",  	RUN+="/usr/bin/systemctl --no-block restart
 # clean up after device removal
 KERNEL=="sd[a-z]*", ACTION=="remove",	RUN+="/usr/bin/systemctl --no-block restart media-automount@%k.service"
 
+ACTION=="add", KERNEL=="sd*", SUBSYSTEMS=="block", ENV{ID_FS_TYPE}=="ext4", RUN+="/bin/mkdir -p '/media/RAW'", RUN+="/bin/mount -o umask=0022,gid=1000,uid=1000,data=writeback -t ext4 $env{DEVNAME} /media/RAW"
+
