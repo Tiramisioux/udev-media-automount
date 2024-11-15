@@ -6,7 +6,7 @@
 AUTOMOUNT_OPTS='rw,noatime,exec'
 
 # If you want to disable journaling, you can uncomment the following line
-#AUTOMOUNT_OPTS+=' -o ^has_journal'
+AUTOMOUNT_OPTS+=' -o ^has_journal'
 
 # Mount type
 AUTOMOUNT_TYPE='ext4'
