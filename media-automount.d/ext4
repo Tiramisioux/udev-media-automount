@@ -2,8 +2,22 @@
 
 # This script automounts any filesystem type and grants write permissions
 
+<<<<<<< HEAD
 # Default mount options
 AUTOMOUNT_OPTS="rw,noatime,exec"
+=======
+# Mount options to use for auto-mounting ext4 drives
+AUTOMOUNT_OPTS='rw,noatime,exec'
+
+# If you want to disable journaling, you can uncomment the following line
+AUTOMOUNT_OPTS+=' -o ^has_journal'
+
+# Mount type
+AUTOMOUNT_TYPE='ext4'
+
+# Device identifier
+DEVICE=$1
+>>>>>>> dbe4322fcfdead66e0a37cdcd2e71d5cbd51b6cc
 
 # Mount point
 MOUNT_POINT="/media/RAW"
