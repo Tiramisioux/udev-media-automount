@@ -1,5 +1,38 @@
-# -*- sh -*-
+#!/bin/sh
 
-AUTOMOUNT_OPTS='rw,defaults,uid=1000,gid=1000,umask=777,errors=continue,noatime,discard,force,prealloc'
-# Mount options to use for auto-mounting NTFS drives
+# This script automounts NTFS3 filesystems and grants write permissions
+
+# Mount options for NTFS3
+AUTOMOUNT_OPTS="rw,defaults,uid=1000,gid=1000,umask=000,errors=continue,noatime,discard,force,prealloc"
+
+# Default filesystem type
 AUTOMOUNT_TYPE="ntfs3"
+
+# Mount point
+MOUNT_POINT="/media/RAW"
+
+# Get device from argument or auto-detect
+if [ -z "$1" ]; then
+    # Find the first available NTFS partition
+    DEVICE=$(lsblk -lp | grep " ntfs " | awk '{print $1}' | head -n 1)
+else
+    DEVICE="$1"
+fi
+
+# Exit if no device found
+if [ -z "$DEVICE" ]; then
+    echo "No NTFS device found for mounting."
+    exit 1
+fi
+
+# Create the mount point if it doesn't exist
+mkdir -p "$MOUNT_POINT"
+
+# Mount the NTFS partition
+mount -t "$AUTOMOUNT_TYPE" -o "$AUTOMOUNT_OPTS" "$DEVICE" "$MOUNT_POINT"
+
+# Set proper permissions
+chmod -R 777 "$MOUNT_POINT"
+chown -R pi:pi "$MOUNT_POINT"
+
+echo "Mounted $DEVICE ($AUTOMOUNT_TYPE) at $MOUNT_POINT with full write access."

@@ -1,24 +1,43 @@
 #!/bin/sh
 
-# This script is used for automounting ext4 filesystems
+# This script automounts any filesystem type and grants write permissions
 
-# Mount options to use for auto-mounting ext4 drives
-AUTOMOUNT_OPTS='rw,noatime,exec'
-
-# If you want to disable journaling, you can uncomment the following line
-#AUTOMOUNT_OPTS+=' -o ^has_journal'
-
-# Mount type
-AUTOMOUNT_TYPE='ext4'
-
-# Device identifier
-DEVICE=$1
+# Default mount options
+AUTOMOUNT_OPTS="rw,noatime,exec"
 
 # Mount point
 MOUNT_POINT="/media/RAW"
+
+# Get device from argument or auto-detect
+if [ -z "$1" ]; then
+    # Find the first available unmounted block device (avoid partitions)
+    DEVICE=$(lsblk -lp | grep " disk " | awk '{print $1}' | head -n 1)
+else
+    DEVICE="$1"
+fi
+
+# Exit if no device found
+if [ -z "$DEVICE" ]; then
+    echo "No available device found for mounting."
+    exit 1
+fi
+
+# Detect filesystem type
+FS_TYPE=$(blkid -o value -s TYPE "$DEVICE")
+
+# Fallback to ext4 if unknown
+if [ -z "$FS_TYPE" ]; then
+    FS_TYPE="ext4"
+fi
 
 # Create the mount point if it doesn't exist
 mkdir -p "$MOUNT_POINT"
 
 # Mount the filesystem
-mount -t "$AUTOMOUNT_TYPE" -o "$AUTOMOUNT_OPTS" "$DEVICE" "$MOUNT_POINT"
+mount -t "$FS_TYPE" -o "$AUTOMOUNT_OPTS" "$DEVICE" "$MOUNT_POINT"
+
+# Set permissions for full write access
+chmod -R 777 "$MOUNT_POINT"
+chown -R pi:pi "$MOUNT_POINT"
+
+echo "Mounted $DEVICE ($FS_TYPE) at $MOUNT_POINT with write access."
