@@ -1,7 +1,10 @@
 # -*- conf-unix -*-
 
 # Automount block devices with NTFS or EXT4 when added
-KERNEL=="sd[a-z]*", ACTION=="add", RUN+="/usr/bin/systemctl --no-block restart media-automount@%k.service"
+# KERNEL=="sd[a-z]*", ACTION=="add", RUN+="/usr/bin/systemctl --no-block restart media-automount@%k.service"
+
+ACTION=="add", KERNEL=="sd[a-z]*", RUN+="/bin/chown -R pi:pi /media/RAW && /bin/chmod -R 777 /media/RAW"
+
 
 # Cleanup on device removal
 KERNEL=="sd[a-z]*", ACTION=="remove", RUN+="/usr/bin/systemctl --no-block restart media-automount@%k.service"
