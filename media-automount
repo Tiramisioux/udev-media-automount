@@ -1,0 +1,80 @@
+#!/bin/sh
+
+# Automount script for NTFS, EXT4, and other filesystems
+
+# Default mount options
+AUTOMOUNT_OPTS_NTFS="rw,noatime,uid=1000,gid=1000,umask=000,dmask=000,fmask=000,windows_names,big_writes"
+AUTOMOUNT_OPTS_EXT4="rw,noatime,exec,acl"
+AUTOMOUNT_OPTS_DEFAULT="rw,noatime"
+
+# Directories
+MOUNTPOINT="/media/RAW"
+
+# Ensure script runs as root
+[ "$(id -u)" -ne 0 ] && {
+    echo "This script requires root permissions."
+    exit 1
+}
+
+DEVICE="$1"
+
+# Wait up to 5 seconds for device to be ready
+for i in {1..5}; do
+    if [ -b "$DEVICE" ]; then
+        break
+    fi
+    sleep 1
+done
+
+# Check if the device exists
+if [ ! -b "$DEVICE" ]; then
+    echo "Device $DEVICE not found."
+    exit 1
+fi
+
+# Detect filesystem type and label
+FSTYPE=$(blkid -o value -s TYPE "$DEVICE")
+LABEL=$(blkid -o value -s LABEL "$DEVICE")
+
+# Exit if unknown filesystem
+if [ -z "$FSTYPE" ]; then
+    echo "Unknown filesystem type on $DEVICE. Skipping."
+    exit 0
+fi
+
+# Ensure only RAW-labeled drives are mounted
+if [ "$LABEL" != "RAW" ]; then
+    echo "Device $DEVICE is not labeled RAW. Skipping."
+    exit 0
+fi
+
+# Select mount options based on filesystem type
+case "$FSTYPE" in
+    ntfs)  MOUNT_OPTS="$AUTOMOUNT_OPTS_NTFS"; MOUNT_CMD="ntfs-3g" ;;
+    ext4)  MOUNT_OPTS="$AUTOMOUNT_OPTS_EXT4"; MOUNT_CMD="mount" ;;
+    *)     MOUNT_OPTS="$AUTOMOUNT_OPTS_DEFAULT"; MOUNT_CMD="mount" ;;
+esac
+
+# Create mount point if not exists
+mkdir -p "$MOUNTPOINT"
+
+# Check if already mounted
+if mountpoint -q "$MOUNTPOINT"; then
+    echo "$MOUNTPOINT is already mounted. Skipping."
+    exit 0
+fi
+
+# Mount the device
+if $MOUNT_CMD -o "$MOUNT_OPTS" "$DEVICE" "$MOUNTPOINT"; then
+    echo "Mounted $DEVICE ($FSTYPE) at $MOUNTPOINT"
+
+    # Set ownership and permissions
+    chown -R pi:pi "$MOUNTPOINT"
+    chmod -R 775 "$MOUNTPOINT"
+
+    exit 0
+else
+    echo "Failed to mount $DEVICE ($FSTYPE) at $MOUNTPOINT"
+    rmdir "$MOUNTPOINT"
+    exit 1
+fi

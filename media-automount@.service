@@ -1,13 +1,12 @@
 [Unit]
-Description=Automount USB Storage (%I)
-After=systemd-udevd.service
-Requires=systemd-udevd.service
+Description=Automount USB Storage (%i)
+After=dev-%i.device
+Requires=dev-%i.device
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/usr/local/bin/media-automount.sh /dev/%I
-ExecStop=/bin/umount /media/RAW
+ExecStart=/usr/local/bin/media-automount /dev/%i
+Restart=always
+User=root
 
 [Install]
 WantedBy=multi-user.target

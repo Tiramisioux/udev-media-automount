@@ -1,10 +1,13 @@
-# -*- conf-unix -*-
+# Automount only USB (sdX) and NVMe drives (nvmeXnXpX) when added
 
-# Automount block devices with NTFS or EXT4 when added
-# KERNEL=="sd[a-z]*", ACTION=="add", RUN+="/usr/bin/systemctl --no-block restart media-automount@%k.service"
+ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="sd[a-z]*", RUN+="/usr/bin/systemctl start media-automount@%k.service"
 
-ACTION=="add", KERNEL=="sd[a-z]*", RUN+="/bin/chown -R pi:pi /media/RAW && /bin/chmod -R 777 /media/RAW"
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="nvme[0-9]n[1-9]*p[0-9]*", RUN+="/bin/systemctl start media-automount@%k.service"
 
+# Set permissions after mounting
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd[a-z][0-9]*", RUN+="/bin/bash -c 'sleep 3 && chown -R pi:pi /media/RAW && chmod -R 775 /media/RAW'"
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="nvme[0-9]n[1-9]*p[0-9]*", RUN+="/bin/bash -c 'sleep 3 && chown -R pi:pi /media/RAW && chmod -R 775 /media/RAW'"
 
 # Cleanup on device removal
-KERNEL=="sd[a-z]*", ACTION=="remove", RUN+="/usr/bin/systemctl --no-block restart media-automount@%k.service"
+ACTION=="remove", SUBSYSTEMS=="usb", KERNEL=="sd[a-z]*", RUN+="/usr/bin/systemctl stop media-automount@%k.service"
+ACTION=="remove", SUBSYSTEM=="block", KERNEL=="nvme[0-9]n[1-9]*p[0-9]*", RUN+="/bin/systemctl stop media-automount@%k.service"
