@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Automount script for NTFS, EXT4, and other filesystems
 
@@ -17,6 +17,7 @@ MOUNTPOINT="/media/RAW"
 }
 
 DEVICE="$1"
+MOUNT_POINT="/media/$(basename $DEVICE)"
 
 # Wait up to 5 seconds for device to be ready
 for i in {1..5}; do

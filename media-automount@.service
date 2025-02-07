@@ -5,7 +5,9 @@ Requires=dev-%i.device
 
 [Service]
 ExecStart=/usr/local/bin/media-automount /dev/%i
-Restart=always
+Type=oneshot
+RemainAfterExit=yes
+Restart=no
 User=root
 
 [Install]
